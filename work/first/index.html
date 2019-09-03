@@ -70,15 +70,76 @@
 <script src="../../common/js/jquery.js"></script>
 <script>
 // 第1問  id='q1'の要素の文字色を赤色にせよ。
+  $("#q1").css("color","red");
+//id='q1'のdivタグにある"Q1"をjQueryのcssメソッドを使い引数に"color","red"を設定して、文字色を赤色で表示する
+
 // 第2問  id='q2'の要素をクリックしたら背景色をピンクにせよ。
+  $("#q2").on("click",function(){
+    $("#q2").css("background-color","pink");
+  });
+//on(click)メソッドでクリック時に処理が実行されるようにする
+//on(click)メソッドの中にcssメソッドで"background-color","pink"を引数に指定して、クリック時に背景がピンクになる
+
 // 第3問  id='q3'の要素をクリックしたら2秒かけてフェードアウトさせよ。
+  $("#q3").on("click",function(){
+    $("#q3").fadeOut(2000);
+  });
+//on(click)メソッドでクリック時に処理が実行されるようにする
+//クリック時にfadeoutメソッドを使い引数に2000(ミリ秒設定なので2秒)を指定して2秒でフェードアウトする
+
 // 第4問  id='q4'の要素をクリックしたらこの要素の前後とこの要素内の前後にテキストを挿入せよ。
+  $("#q4").on("click",function(){
+      $("#q4").append("DOMの中の後");//appendメソッドで指定した引数の文字列をid='q4'の要素「Q4」の先頭に挿入する
+      $("#q4").prepend("DOMの中の前");//prependメソッドで指定した引数の文字列をid='q4'の要素「Q4」の末尾に挿入する
+      $("#q4").before("DOMの前");//beforeメソッドで指定した引数の文字列をid='q4'の要素「Q4」の前に挿入する
+      $("#q4").after("DOMの後");//afterメソッドで指定した引数の文字列をid='q4'の要素「Q4」の後に挿入する
+  });
+
 // 第5問  id='q5'の要素をクリックしたらこの要素にlargeというクラスを付与せよ。
+  $("#q5").on("click",function(){
+    $("#q5").addClass("large");//addClassメソッドでid='q5'の要素にlargeというクラスを追加
+  });
+
 // 第6問  id='q6'の要素をクリックしたらこの要素を2秒かけてmargin-topとmargin-leftを100pxの位置に移動させよ。
+  $("#q6").on("click",function(){
+    //animateメソッドでid='q6'の要素を指定の場所へ移動する
+    $("#q6").animate({
+      "marginTop": "100px", //margin-topが100pxの位置を指定
+      "marginLeft": "100px" //margin-leftが100pxの位置を指定
+    },2000); //2000ミリ秒(2秒)かけてアニメーションするよう指定
+  });
+
 // 第7問  id='q7'の子要素をクリックしたら、その要素のインデックス（何番目か）をconsole.log()とalert()を用いて表示させよ。
+  $("#q7>li").on("click",function(){    //liタグクリック時のイベント
+    var i = $("#q7>li").index(this);//id='q7'の子要素liの中でクリックしたオブジェクトがthisとして指定され、そのindexの番号をiに代入する
+
+    alert(i);//index番号を代入したiをアラートで表示
+    console.log(i);//index番号を代入したiをコンソールで表示
+  });
+
 // 第8問  id='q8'の要素をhoverしたらlargeというクラスを付与し、hoverが外れたら、クラスを削除せよ。
+  $("#q8").hover(function(){
+    $("#q8").addClass("large");//hoverメソッドによりホバーした際にlargeクラスを付与する
+  },function(){
+    $("#q8").removeClass("large");//hoverメソッドの二つ目の引数に指定することでホバーが外れた際の動きを指定でき、ホバーが外れた際にremoveClassメソッドによりlargeクラスを削除する
+  });
+  
 // 第9問  id='q9'の要素をクリックしたらこの要素に設定してあるdata属性をconsoleに表示せよ。
+  $("#q9").on("click",function(){
+    var i = $("#q9").attr("data-text");//attrメソッドの引数に取得する属性であるdata-textを指定し、設定している属性値を取得し変数iへ代入する
+
+    console.log(i);//上記で取得したiをコンソールへ表示する
+  });
+
 // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
+  $("#q10>li").on("click",function(){
+    var q10 = $("#q10>li").index(this);//indexメソッドによりクリックした要素のインデックスを取得する
+
+    $("#q11>li").eq(q10).addClass("large");
+    //上記で取得したインデックスと等しいid='q11'の子要素をeqメソッド(引数は上記で取得したインデックス)で取得し
+    //その要素のみにaddClassでlargeクラスを付与する
+  });
+
 </script>
 </body>
 </html>
