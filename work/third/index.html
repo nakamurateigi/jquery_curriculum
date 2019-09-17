@@ -30,6 +30,14 @@
       // .eq() 引数に応じたindexの要素を指定します。
       // .addClass() クラスを追加します。
       // .removeClass() クラスを削除します。
+      $(".nav > li").on("click",function(){
+        var nav_index = $(".nav > li").index(this);
+        //indexメソッド(引数にthisを指定することでクリックした要素を指定)によりクリックした要素のインデックスを取得する
+        $(".contents > li").addClass("is-hidden");
+        //まず.contentsの子要素のli要素全体にis-hiddenクラスを付与する
+        $(".contents > li").eq(nav_index).removeClass("is-hidden");
+        //indexメソッドで取得したインデックスの.contentsの子要素のli要素のis-hiddenクラスを削除することで文言を表示する
+      });
     </script>
   </body>
 </html>
