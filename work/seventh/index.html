@@ -34,6 +34,61 @@
       // .data() 要素のdata属性を取得します。
       // .width() 要素の幅を取得します。
       // .length 要素の個数を取得します。
+
+      var img_array = [0,600,1200,1800];//各画像の位置のpx数
+      var slider_width = $(".slider-list").width();//slider-listクラス自体の幅を取得
+      var count = 0;//位置情報を格納した配列の番号を管理する数値
+      var click_flg = true;//ボタンを連打した際の挙動を制御するためのフラグ
+
+      $("button").on("click",function(){
+        //データ属性が"prev"のボタンを押した場合の処理
+        if($(this).data("ctrl") == "prev"){
+          //制御用のフラグがtrueの場合にスライド処理を実行する
+          if(click_flg){
+            click_flg = false;//制御用のフラグを一旦falseにする
+
+            //countが0以上の場合はcountの値を-1する
+            if(count >= 0){
+              count -= 1;
+            }
+
+            //countが-1より大きい場合は配列の位置情報を取得し左へスライドする、スライド処理が完了したら制御用flgをtrueにする
+            if(count > -1){
+              $(".slider-list").animate({"left":-(img_array[count])},500,function(){click_flg = true;});
+            } 
+            //countが1と等しい場合は左端から右端へスライドする、スライド処理が完了したら制御用flgをtrueにする
+            else if(count == -1){
+              count = img_array.length - 1;
+              $(".slider-list").animate({"left":600 - slider_width},500,function(){click_flg = true;});
+            }
+          }
+        }
+        //データ属性が"next"のボタンを押した場合の処理
+        else if($(this).data("ctrl") == "next"){
+          //制御用のフラグがtrueの場合にスライド処理を実行する
+          if(click_flg){
+            click_flg = false;//制御用のフラグを一旦falseにする
+
+            //countが配列の要素数以下の場合はcountの値を+1する
+            if(count <= img_array.length){
+              count += 1;
+            }
+
+            //countが配列の要素数より小さい場合は配列の位置情報を取得し→へスライドする、スライド処理が完了したら制御用flgをtrueにする
+            if(count < img_array.length){
+              $(".slider-list").stop(true, false).animate({"left":-(img_array[count])},500,function(){click_flg = true});
+              console.log(count);
+            }
+            //countが配列の要素数と等しい場合は右端から左端へスライドする、スライド処理が完了したら制御用flgをtrueにする 
+            else if(count == img_array.length) {
+              count = 0;
+              $(".slider-list").animate({"left":0},500,function(){click_flg = true});
+              console.log(count);
+            }
+          }
+        }  
+      });
+
     </script>
   </body>
 </html>

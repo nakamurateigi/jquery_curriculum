@@ -26,6 +26,28 @@
       // .keyup() 文字入力後に発火されるイベントです。
       // .replace(/\s+/g,'').length 改行を含まない文字数を取得します。
       // .val() input要素のvalueを取得します。
+
+      $(".input").keyup(function(){
+        //inputクラスのテキストフォームに入力された文字列をvalメソッドで取得する
+        //replace(/\s+/g,'')で空白を削除する
+        //lengthで入力した文字数を取得しinput_text_countへ代入
+        var input_text_count = $(".input").val().replace(/\s+/g,'').length;
+
+        //最大文字数の30から入力文字数を引く
+        var output_count = 30 - input_text_count;
+        
+        //output_countの数値をrest-countクラスの要素としてtextメソッドで変更する
+        $(".rest-count").text(output_count);
+
+        if(output_count < 0){
+          //30文字以上入力した場合、addClassメソッドでredクラスを追加する
+          $(".rest-count").addClass("red");
+        }else{
+          //30文字以内の入力の場合、removeClassメソッドでredクラスを削除する
+          $(".rest-count").removeClass("red");
+        }
+        
+      });
     </script>
   </body>
 </html>
