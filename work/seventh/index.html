@@ -40,53 +40,39 @@
       var count = 0;//位置情報を格納した配列の番号を管理する数値
       var click_flg = true;//ボタンを連打した際の挙動を制御するためのフラグ
 
-      $("button").on("click",function(){
-        //データ属性が"prev"のボタンを押した場合の処理
-        if($(this).data("ctrl") == "prev"){
-          //制御用のフラグがtrueの場合にスライド処理を実行する
-          if(click_flg){
-            click_flg = false;//制御用のフラグを一旦falseにする
+      $(".slider-ctrl-btn").on("click",function(){
+        //制御用のフラグがtrueの場合実行する
+        if(click_flg){
+          click_flg = false;//制御用のフラグを一旦falseにする
+          
+          //データ属性が"prev"のボタンを押した場合の処理
+          if($(this).data("ctrl") == "prev"){
 
             //countが0以上の場合はcountの値を-1する
-            if(count >= 0){
+            if(count >= 1){
               count -= 1;
-            }
-
-            //countが-1より大きい場合は配列の位置情報を取得し左へスライドする、スライド処理が完了したら制御用flgをtrueにする
-            if(count > -1){
-              $(".slider-list").animate({"left":-(img_array[count])},500,function(){click_flg = true;});
-            } 
-            //countが1と等しい場合は左端から右端へスライドする、スライド処理が完了したら制御用flgをtrueにする
-            else if(count == -1){
+            //countが0以下の場合は配列の最大要素番号を代入する
+            }else if(count <= 0){
               count = img_array.length - 1;
-              $(".slider-list").animate({"left":600 - slider_width},500,function(){click_flg = true;});
             }
-          }
-        }
-        //データ属性が"next"のボタンを押した場合の処理
-        else if($(this).data("ctrl") == "next"){
-          //制御用のフラグがtrueの場合にスライド処理を実行する
-          if(click_flg){
-            click_flg = false;//制御用のフラグを一旦falseにする
 
-            //countが配列の要素数以下の場合はcountの値を+1する
-            if(count <= img_array.length){
+          }
+          //データ属性が"next"のボタンを押した場合の処理
+          else if($(this).data("ctrl") == "next"){
+
+            //countが配列の要素数未満の場合はcountの値を+1する
+            if(count < img_array.length -1){
               count += 1;
+            //countが配列の要素数以上の場合はcountの値を0にする
+            }else if(count >= img_array.length - 1){
+              count = 0;
             }
 
-            //countが配列の要素数より小さい場合は配列の位置情報を取得し→へスライドする、スライド処理が完了したら制御用flgをtrueにする
-            if(count < img_array.length){
-              $(".slider-list").stop(true, false).animate({"left":-(img_array[count])},500,function(){click_flg = true});
-              console.log(count);
-            }
-            //countが配列の要素数と等しい場合は右端から左端へスライドする、スライド処理が完了したら制御用flgをtrueにする 
-            else if(count == img_array.length) {
-              count = 0;
-              $(".slider-list").animate({"left":0},500,function(){click_flg = true});
-              console.log(count);
-            }
           }
-        }  
+        //countの数値の配列の要素(スライド位置)を取得し、その位置へスライドする、スライド処理が完了したら制御用flgをtrueにする
+        $(".slider-list").animate({"left":-(img_array[count])},500,function(){click_flg = true;console.log(click_flg);});
+        }
+
       });
 
     </script>
