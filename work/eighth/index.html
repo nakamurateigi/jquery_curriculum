@@ -42,6 +42,41 @@
       // .offset().top 要素の位置を取得します。
       // .fadeIn() 要素をフェードインさせる。
       // .fadeOut() 要素をフェードアウトさせる。
+
+      //ウィンドウがスクロールする度にscroll()で処理が実行される
+      $(window).scroll(function(){
+        //scrollTop()でスクロール位置を取得し、100px以上の場合はフェードインする
+        if($(this).scrollTop() >= 100){
+          $(".scrollTopBtn").fadeIn();
+        }
+        //スクロール位置が100px未満の場合はフェードアウトする
+        else{
+          $(".scrollTopBtn").fadeOut();
+        }
+      });
+
+      //scrollTopBtnクラスのボタンをクリックすると画面TOPへスクロールする
+      $(".scrollTopBtn").on("click",function(){
+        //animate()でscrollTop:0で画面TOPへスクロールするようにアニメーションさせる
+        $("html,body").animate({scrollTop:0},500);
+      });
+
+      //画面上部のメニューボタンをクリックした場合に実行する
+      $(".menu__btn").on("click",function(){
+        //押したメニューボタンのscroll-place-typeのデータ属性値をmenu_dataへ代入
+        var menu_data = $(this).data("scroll-place-type");
+        
+        //コンテンツの文がある各titleクラスをeachメソッドにより繰り返し処理を行う
+        $(".title").each(function(){
+          //各titleクラスのscroll-place-typeのデータ属性値とmenu_dataが一致した場合、contents_offsetに一致したtitleクラス要素の位置情報を代入する
+          if($(this).data("scroll-place-type") == menu_data){
+            var contents_offset = $(this).offset().top;
+            //contents_offsetの位置までスクロールするようにanimateメソッドでアニメーションする
+            $("html,body").animate({scrollTop:contents_offset},500);
+          }
+        });
+      });
+
     </script>
   </body>
 </html>
