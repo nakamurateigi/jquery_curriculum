@@ -42,6 +42,23 @@
       // </li>
       //
       // このテンプレートに取得してきた中身を入れて表示します。
+
+      $.ajax({
+        url: "./data.json",//同じフォルダのdata.jsonを指定する
+        datatype: "json"//jsonファイルなのでdatatypeはjsonを指定する
+      }).done(function(data){//通信に成功した場合doneを実行する
+
+        var colors_array = data.colorsArray;//取得したjsonデータは"colorsArray"をキーとして、配列データを取得し変数へ代入する
+        
+        $.each(colors_array,function(index,value){//eachメソッドで引数に上記配列(colors_array)、function(index,value)を指定、indexは配列の番号、valueは配列内のデータが入る
+          //まずは、<li class="colorList__item">にappendメソッドで<p class="colorList__title" style="background-color:'+ value.hexValue +';">を追加していく形で記述する
+          //colorListクラスに上記で追加した($('<li class="colorList__item">').append('<p class="colorList__title" style="background-color:'+ value.hexValue +';">'))の要素をappendメソッドで追加する
+          $(".colorList").append($('<li class="colorList__item">').append('<p class="colorList__title" style="background-color:'+ value.hexValue +';">'));
+          //上記appendで追加されたcolorList__titleクラスのindexと配列の要素番号が一致する要素にhtmlメソッドでcolorNameを出力する
+          $(".colorList__title").eq(index).html(value.colorName);
+        });
+      });
+
     </script>
   </body>
 </html>
