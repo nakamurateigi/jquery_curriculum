@@ -49,13 +49,28 @@
       }).done(function(data){//通信に成功した場合doneを実行する
 
         var colors_array = data.colorsArray;//取得したjsonデータは"colorsArray"をキーとして、配列データを取得し変数へ代入する
+        var count = 0;
+
+        $(".colorList").html('<li class="colorList__item">');//colorListクラスの要素にまず'<li class="colorList__item">'を追加する
         
         $.each(colors_array,function(index,value){//eachメソッドで引数に上記配列(colors_array)、function(index,value)を指定、indexは配列の番号、valueは配列内のデータが入る
           //まずは、<li class="colorList__item">にappendメソッドで<p class="colorList__title" style="background-color:'+ value.hexValue +';">を追加していく形で記述する
           //colorListクラスに上記で追加した($('<li class="colorList__item">').append('<p class="colorList__title" style="background-color:'+ value.hexValue +';">'))の要素をappendメソッドで追加する
-          $(".colorList").append($('<li class="colorList__item">').append('<p class="colorList__title" style="background-color:'+ value.hexValue +';">'));
-          //上記appendで追加されたcolorList__titleクラスのindexと配列の要素番号が一致する要素にhtmlメソッドでcolorNameを出力する
-          $(".colorList__title").eq(index).html(value.colorName);
+          //以下appendメソッドでのパターン
+          //$(".colorList").append($('<li class="colorList__item">').append('<p class="colorList__title" style="background-color:'+ value.hexValue +';">'));
+          
+          //htmlメソッドのパターン
+          //colorList__itemのindex番号とcolors_arrayの配列の要素番号が合致するvalue.hexValueを表示する'<p class="colorList__title" style="background-color:'+ value.hexValue +';">'の要素を追加する
+          $(".colorList__item").eq(index).html('<p class="colorList__title" style="background-color:'+ value.hexValue +';">');
+          $(".colorList__title").eq(index).html(value.colorName);//colorList__titleクラスのindex番号とcolors_arrayの配列の要素番号が合致するvalue.colorNameを表示する
+
+          //配列の要素数はindexより1大きくなるため-1をして、最大数まで繰り返したらeachメソッドを終了する
+          if(index === ((colors_array.length) - 1)){
+            return false;
+          }
+          //index番号が一番大きいcolorList__itemクラス要素の次に新たなcolorList__itemクラス要素を追加する
+          $(".colorList__item").eq(index).after('<li class="colorList__item">');
+
         });
       });
 
