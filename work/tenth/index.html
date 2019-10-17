@@ -68,6 +68,89 @@
       //
       //
       //
+
+      var click_count = 0;//同じキーワードを検索した回数
+      var keyword;//検索キーワード
+
+      $(".search__btn").on("click",function(){
+        //新しい検索キーワードを入力した場合に今までの検索結果をリセットする
+        if(keyword != $("#js-search-word").val()){
+          reset();
+        }
+
+        keyword = $("#js-search-word").val();//検索キーワードを取得する
+        ajax_test(keyword,click_count);//検索結果を表示する関数
+        click_count++;//検索キーワードを一回クリックしたことをカウントする
+      });
+
+      function ajax_test(keyword,click_count){
+        $.ajax({
+          url:"https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404",
+          type: "GET",
+          datatype: "json",
+          data: {
+            applicationId: "1019399324990976605",
+            keyword: keyword,//検索キーワードをapiのリクエストパラメータの「keyword」に指定する
+            hits: 20,//一回のapi実行で取得する件数を20件に指定する
+            page: 1 + click_count//同じキーワードで検索した回数分だけ次のページを指定する
+          }
+        }).done(function(data,text_status){
+          done_test(data);
+        }).fail(function(jqXHR, textStatus, errorThrown){
+          reset();//1回前の検索結果でエラーメッセージが表示されていた場合にメッセージを削除するための関数
+          fail_test(jqXHR.status);
+        });
+      }
+
+      //ajax通信が成功した場合の処理
+      function done_test(data){
+        var search_result = data.Items;//apiのレスポンスから商品情報を取得する
+
+        if(data.count == 0){
+          //検索結果が0件だった場合のメッセージを要素に追加する
+          $(".lists").after('<p class="result-message" style="text-align: center;">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
+        }else{
+          //取得した各商品情報をeachメソッドで取得する
+          $.each(search_result,function(index,value){
+            //listsクラスに商品情報の要素を繰り返し処理で追加していく
+            $(".lists").prepend(
+              $("<li class='lists__item'>").append(
+                $("<div class='lists__item__inner'>").append(
+                  $("<a href='' class='lists__item__link' target='_blank'>")
+                  .append("<img src='"+ value.Item.largeImageUrl +"' class='lists__item__img' alt='"+ value.Item.title +"'>")
+                  .append("<p class='lists__item__detail'>作品名："+ value.Item.title +"</p>")
+                  .append("<p class='lists__item__detail'>作者　："+ value.Item.author +"</p>")
+                  .append("<p class='lists__item__detail'>出版社："+ value.Item.label +"</p>")
+                )
+              )
+            );
+          });
+        }
+      }
+
+      //ajax通信が失敗した場合の処理
+      function fail_test(jqXHRStatus){
+        //switch文で以下3つのステータスコードの場合のメッセージの要素を追加する
+        switch(jqXHRStatus){
+          case 400:
+            $(".lists").after('<p class="result-message" style="text-align: center;">検索ワードの指定がありません。<br>検索ワードの指定をお願い致します。</p>');
+            break;
+          case 429:
+            $(".lists").after('<p class="result-message" style="text-align: center;">短い間隔での検索ボタンの連続クリックはおやめください。</p>');
+            break;
+          case 500:
+            $(".lists").after('<p class="result-message" style="text-align: center;">システムエラーのため復旧までしばらくお待ちください。</p>');
+            break;
+        }
+      }
+
+      //追加した要素を削除する処理
+      function reset(){
+        click_count = 0;
+        $(".lists").empty();
+        $(".result-message").empty();
+      }
+
     </script>
   </body>
 </html>
