@@ -69,8 +69,8 @@
       //
       //
 
-      var click_count = 0;//同じキーワードを検索した回数
       var keyword;//検索キーワード
+      var page = 1;//APIで取得するページ番号,初期値に最初のページ番号の1を代入
 
       $(".search__btn").on("click",function(){
         //新しい検索キーワードを入力した場合に今までの検索結果をリセットする
@@ -79,11 +79,11 @@
         }
 
         keyword = $("#js-search-word").val();//検索キーワードを取得する
-        ajax_test(keyword,click_count);//検索結果を表示する関数
-        click_count++;//検索キーワードを一回クリックしたことをカウントする
+        ajax_test(keyword,page);//検索結果を表示する関数
+        page++;//検索キーワードを一回クリックしたことをカウントする
       });
 
-      function ajax_test(keyword,click_count){
+      function ajax_test(keyword,page){
         $.ajax({
           url:"https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404",
           type: "GET",
@@ -92,7 +92,7 @@
             applicationId: "1019399324990976605",
             keyword: keyword,//検索キーワードをapiのリクエストパラメータの「keyword」に指定する
             hits: 20,//一回のapi実行で取得する件数を20件に指定する
-            page: 1 + click_count//同じキーワードで検索した回数分だけ次のページを指定する
+            page: page//同じキーワードで検索した回数分だけ次のページを指定する
           }
         }).done(function(data,text_status){
           done_test(data);
@@ -111,23 +111,34 @@
           reset();
           $(".lists").after('<p class="result-message" style="text-align: center;">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
         }else{
+          var count = 0;//eachメソッドで繰り返した回数を代入する
+          var $element;//$(".lists")へ追加した<li>要素を代入する
           //取得した各商品情報をeachメソッドで取得する
           $.each(search_result,function(index,value){
             //listsクラスに商品情報の要素を繰り返し処理で追加していく
-            /*
-            $(".lists").prepend(
-              $("<li class='lists__item'>").append(
-                $("<div class='lists__item__inner'>").append(
-                  $("<a href='' class='lists__item__link' target='_blank'>")
-                  .append("<img src='"+ value.Item.largeImageUrl +"' class='lists__item__img' alt='"+ value.Item.title +"'>")
-                  .append("<p class='lists__item__detail'>作品名："+ value.Item.title +"</p>")
-                  .append("<p class='lists__item__detail'>作者　："+ value.Item.author +"</p>")
-                  .append("<p class='lists__item__detail'>出版社："+ value.Item.label +"</p>")
-                )
-              )
-            );
-            */
-            $(".lists").append(
+
+            //$(".lists")へ追加する最初の<li>要素をprependメソッドで追加する
+            if(count == 0){
+              $(".lists").prepend(
+                "<li class='lists__item'>" + index +
+                  "<div class='lists__item__inner'>" +
+                    "<a href='' class='lists__item__link' target='_blank'>" +
+                    "<img src='" + value.Item.largeImageUrl + "' class='lists__item__img' alt='" + value.Item.title + "'>" +
+                    "<p class='lists__item__detail'>作品名：" + value.Item.title + "</p>" +
+                    "<p class='lists__item__detail'>作者　：" + value.Item.author + "</p>" +
+                    "<p class='lists__item__detail'>出版社：" + value.Item.label + "</p>" +
+                    "</a>" +
+                  "</div>" +
+                "</li>"
+              );
+              count++;//繰り返した回数を1増やす
+              return true;//繰り返し処理を終了して次の繰り返し処理へ移る
+            }
+            
+            $element = $(".lists__item").eq(count-1);//前回の繰り返し処理で追加した要素を代入する
+            
+            //afterメソッドで前回の繰り返し処理で追加した要素の次に新たな<li>要素を追加する
+            $element.after(
               "<li class='lists__item'>" + index +
                 "<div class='lists__item__inner'>" +
                   "<a href='' class='lists__item__link' target='_blank'>" +
@@ -138,7 +149,8 @@
                   "</a>" +
                 "</div>" +
               "</li>"
-            )
+            );
+            count++;//繰り返した回数を1増やす
           });
         }
       }
@@ -146,9 +158,20 @@
       //ajax通信が失敗した場合の処理
       function fail_test(jqXHRStatus){
         //switch文で以下3つのステータスコードの場合のメッセージの要素を追加する
+        console.log(jqXHRStatus);
         switch(jqXHRStatus){
+          //オフラインの場合のエラーメッセージ
+          case 0:
+            $(".lists").after('<p class="result-message" style="text-align: center;">オフラインのためインターネットへ接続して下さい。</p>');
+            break;
           case 400:
-            $(".lists").after('<p class="result-message" style="text-align: center;">検索ワードの指定がありません。<br>検索ワードの指定をお願い致します。</p>');
+            //検索ワードが1文字の場合
+            if(keyword.length == 1){
+              $(".lists").after('<p class="result-message" style="text-align: center;">検索ワードの入力が正しくありません。<br>改めて検索ワードの指定をお願い致します。</p>');
+            //検索ワードが入力されていない場合
+            }else{
+              $(".lists").after('<p class="result-message" style="text-align: center;">検索ワードの指定がありません。<br>検索ワードの指定をお願い致します。</p>');
+            }
             break;
           case 429:
             $(".lists").after('<p class="result-message" style="text-align: center;">短い間隔での検索ボタンの連続クリックはおやめください。</p>');
@@ -164,10 +187,42 @@
 
       //追加した要素を削除する処理
       function reset(){
-        click_count = 0;
+        page = 1;
         $(".lists").empty();
         $(".result-message").empty();
       }
+      
+      /*httpメソッドのGETとPOSTの説明
+      httpはwebサーバとクライアントの間でのデータの送受信を行うためのプロトコル、取り決めの事。
+      GET、POSTはクライアントからサーバへのリクエストメソッド(リクエストする方法)の種類。
+      クライアントからサーバへリクエストした内容をリクエストメッセージと呼ぶ。
+      リクエストメッセージは以下に大きく分けられる。
+      ・リクエストライン
+      ・ヘッダ
+      ・メッセージボディ
+
+      GET：
+      GETメソッドはリクエストする際に送信できるデータ量に制限があり、
+      リクエストパラメータはURL(上記のリクエストラインの部分)に表示されるため、主にサーバから情報を取得する際に使用する。
+      GETメソッドの例：
+      http://localhost:8080/index.html?hoge=hoge
+      ↑のように?以降にリクエストパラメータが表示される。
+      POST：
+      POSTメソッドはGETメソッドに比べて多くのデータ量を送信でき、
+      リクエストするパラメータもメッセージボディに記述され、
+      他の人に情報を見られることが無いので
+      主にサーバへ情報を登録する場合に使用する。
+      */
+
+      /*APIの説明
+      API(Application Programming Interface)は、外部が開発したソフトウェアの機能の一部を
+      公開して、他の第三者がその機能を共有、利用できるようにしたもの。
+      公開されている機能を第三者が開発しているプログラムに組み込んで、
+      認証機能(LINE等のログイン認証)を利用したり、数値等のデータの取り込み(楽天の商品情報の取得)等が行える。
+      機能は利用できるが、内部のコードまでは公開されていないので、どのように使えばいいか
+      ルールも一緒に公開されているものが一般的。
+      APIはweb上で通信して利用することが普通のため、WEBAPIとも呼ばれる。
+      */
 
     </script>
   </body>
