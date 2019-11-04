@@ -90,6 +90,7 @@
           datatype: "json",
           data: {
             applicationId: "1019399324990976605",
+            booksGenreId: '001',
             keyword: keyword,//検索キーワードをapiのリクエストパラメータの「keyword」に指定する
             hits: 20,//一回のapi実行で取得する件数を20件に指定する
             page: page//同じキーワードで検索した回数分だけ次のページを指定する
@@ -111,47 +112,23 @@
           reset();
           $(".lists").after('<p class="result-message" style="text-align: center;">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。</p>');
         }else{
-          var count = 0;//eachメソッドで繰り返した回数を代入する
-          var $element;//$(".lists")へ追加した<li>要素を代入する
+          var list = "";//繰り返し処理で追加されるli要素を代入する変数、""で初期化
           //取得した各商品情報をeachメソッドで取得する
           $.each(search_result,function(index,value){
-            //listsクラスに商品情報の要素を繰り返し処理で追加していく
-
-            //$(".lists")へ追加する最初の<li>要素をprependメソッドで追加する
-            if(count == 0){
-              $(".lists").prepend(
-                "<li class='lists__item'>" + index +
-                  "<div class='lists__item__inner'>" +
-                    "<a href='' class='lists__item__link' target='_blank'>" +
-                    "<img src='" + value.Item.largeImageUrl + "' class='lists__item__img' alt='" + value.Item.title + "'>" +
-                    "<p class='lists__item__detail'>作品名：" + value.Item.title + "</p>" +
-                    "<p class='lists__item__detail'>作者　：" + value.Item.author + "</p>" +
-                    "<p class='lists__item__detail'>出版社：" + value.Item.label + "</p>" +
-                    "</a>" +
-                  "</div>" +
-                "</li>"
-              );
-              count++;//繰り返した回数を1増やす
-              return true;//繰り返し処理を終了して次の繰り返し処理へ移る
-            }
-            
-            $element = $(".lists__item").eq(count-1);//前回の繰り返し処理で追加した要素を代入する
-            
-            //afterメソッドで前回の繰り返し処理で追加した要素の次に新たな<li>要素を追加する
-            $element.after(
-              "<li class='lists__item'>" + index +
-                "<div class='lists__item__inner'>" +
-                  "<a href='' class='lists__item__link' target='_blank'>" +
-                  "<img src='" + value.Item.largeImageUrl + "' class='lists__item__img' alt='" + value.Item.title + "'>" +
-                  "<p class='lists__item__detail'>作品名：" + value.Item.title + "</p>" +
-                  "<p class='lists__item__detail'>作者　：" + value.Item.author + "</p>" +
-                  "<p class='lists__item__detail'>出版社：" + value.Item.label + "</p>" +
-                  "</a>" +
-                "</div>" +
-              "</li>"
-            );
-            count++;//繰り返した回数を1増やす
+            //list変数に繰り返し取得したデータのli要素を代入していく
+            list += "<li class='lists__item'>" + index +
+                      "<div class='lists__item__inner'>" +
+                        "<a href='' class='lists__item__link' target='_blank'>" +
+                        "<img src='" + value.Item.largeImageUrl + "' class='lists__item__img' alt='" + value.Item.title + "'>" +
+                        "<p class='lists__item__detail'>作品名：" + value.Item.title + "</p>" +
+                        "<p class='lists__item__detail'>作者　：" + value.Item.author + "</p>" +
+                        "<p class='lists__item__detail'>出版社：" + value.Item.label + "</p>" +
+                        "</a>" +
+                      "</div>" +
+                    "</li>";
           });
+          //繰り返し処理で代入された変数をprependメソッドで.lists要素に追加する
+          $(".lists").prepend(list);
         }
       }
 
